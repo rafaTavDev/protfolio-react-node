@@ -7,7 +7,7 @@ import ParticlesBg from 'particles-bg'
 
 function App() {
 
-  //Github alteradoooooo
+
 
 
 
