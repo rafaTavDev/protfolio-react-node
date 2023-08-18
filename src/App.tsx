@@ -4,14 +4,24 @@ import Logo from './components/Logo/Logo'
 import Rank from './components/Rank/Rank'
 import Input from "./components/Input/Input"
 import ParticlesBg from 'particles-bg'
+import ImagemRosto from './components/ImagemRosto/ImagemRosto'
+import { ImgContextProvider } from './Contexts/ImgContext'
 
 function App() {
 
+  const [urlImg, setUrlImg] = useState<string>("")
 
-
-
+  function pegarUrl(url: string){
+    setUrlImg(url)
+  }
 
   useEffect(() => {
+    console.log(urlImg)
+  }, [urlImg])
+
+
+
+  function reqUrl(img: string){
     
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // In this section, we set the user authentication, user and app ID, model details, and the URL
@@ -27,7 +37,7 @@ const APP_ID = 'face-detection-portif';
 // Change these to whatever model and image URL you want to use
 const MODEL_ID = 'face-detection';
 const MODEL_VERSION_ID = '6dc7e46bc9124c5c8824be4822abe105';    
-const IMAGE_URL = 'https://samples.clarifai.com/metro-north.jpg';
+const IMAGE_URL = img;
 
 ///////////////////////////////////////////////////////////////////////////////////
 // YOU DO NOT NEED TO CHANGE ANYTHING BELOW THIS LINE TO RUN THIS EXAMPLE
@@ -66,8 +76,7 @@ fetch("https://api.clarifai.com/v2/models/" + MODEL_ID + "/versions/" + MODEL_VE
     .then(response => response.text())
     .then(result => console.log(result))
     .catch(error => console.log('error', error));
-
-  }, [])
+  }
 
 
 
@@ -81,7 +90,10 @@ fetch("https://api.clarifai.com/v2/models/" + MODEL_ID + "/versions/" + MODEL_VE
       <Logo />
       <div className='flex flex-col items-center gap-8 py-4'>
         <Rank />
-        <Input />
+        <ImgContextProvider>
+          <Input fnUrl={pegarUrl} fnReq={reqUrl} />
+          <ImagemRosto />
+        </ImgContextProvider>
       </div>
       <div className='bg-gradient-to-r from-purple-500 to-pink-500 absolute inset-0 -z-10'></div>
     </div>

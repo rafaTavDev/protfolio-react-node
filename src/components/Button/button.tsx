@@ -1,12 +1,13 @@
 
 type Props = {
-    isInputButton?: boolean 
+    isInputButton?: boolean,
+    fnClick?: () => void
 }
 
 
-function Button({isInputButton}: Props){
+function Button({isInputButton, fnClick}: Props){
     return(
-        <div className="py-2 px-4 bg-pink-600 hover:cursor-pointer" style={{borderTopRightRadius: isInputButton? "0.75rem" : "auto", borderBottomRightRadius: isInputButton? "0.75rem" : "auto"}}>
+        <div onClick={fnClick} className="py-2 px-4 bg-pink-600 hover:cursor-pointer" style={{borderTopRightRadius: isInputButton? "0.75rem" : "auto", borderBottomRightRadius: isInputButton? "0.75rem" : "auto"}}>
             Detectar
         </div>
     )
