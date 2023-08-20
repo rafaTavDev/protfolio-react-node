@@ -9,7 +9,31 @@ import { ImgContextProvider } from './Contexts/ImgContext'
 
 function App() {
 
+  type region = {
+    data: any,
+    id: string, 
+    region_info: {
+      bounding_box: {
+        top_row: number, left_col: number, bottom_row: number, right_col: number
+      }
+    },
+    value: number
+  }
+
+  type respApiType = {
+    status: {code: number, description: string, req_id: string},
+    outputs: [{
+      created_at: string,
+      data: {regions: region[]},
+      id: string,
+      input: any,
+      model: any,
+      status: {code: number, description: string} 
+    }]
+  }
+
   const [urlImg, setUrlImg] = useState<string>("")
+  const [respApi, setRespApi] = useState<respApiType | undefined>()
 
   function pegarUrl(url: string){
     setUrlImg(url)
@@ -19,6 +43,9 @@ function App() {
     console.log(urlImg)
   }, [urlImg])
 
+
+
+  console.log(respApi)
 
 
   function reqUrl(img: string){
@@ -73,8 +100,8 @@ const requestOptions = {
 // this will default to the latest version_id
 
 fetch("https://api.clarifai.com/v2/models/" + MODEL_ID + "/versions/" + MODEL_VERSION_ID + "/outputs", requestOptions)
-    .then(response => response.text())
-    .then(result => console.log(result))
+    .then(response => response.json())
+    .then(result => setRespApi(result))
     .catch(error => console.log('error', error));
   }
 
@@ -92,7 +119,7 @@ fetch("https://api.clarifai.com/v2/models/" + MODEL_ID + "/versions/" + MODEL_VE
         <Rank />
         <ImgContextProvider>
           <Input fnUrl={pegarUrl} fnReq={reqUrl} />
-          <ImagemRosto />
+          <ImagemRosto respApi={respApi} />
         </ImgContextProvider>
       </div>
       <div className='bg-gradient-to-r from-purple-500 to-pink-500 absolute inset-0 -z-10'></div>
