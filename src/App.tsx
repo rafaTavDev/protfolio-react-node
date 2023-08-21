@@ -34,14 +34,16 @@ function App() {
 
   const [urlImg, setUrlImg] = useState<string>("")
   const [respApi, setRespApi] = useState<respApiType | undefined>()
+  const [erro, setErro] = useState<boolean>(false)
+  const [detectando, setDetectando] = useState<boolean>(false)
 
   function pegarUrl(url: string){
     setUrlImg(url)
   }
 
   useEffect(() => {
-    console.log(urlImg)
-  }, [urlImg])
+    console.log(respApi)
+  }, [respApi])
 
 
 
@@ -49,60 +51,47 @@ function App() {
 
 
   function reqUrl(img: string){
-    
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// In this section, we set the user authentication, user and app ID, model details, and the URL
-// of the image we want as an input. Change these strings to run your own example.
-//////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Your PAT (Personal Access Token) can be found in the portal under Authentification
-const PAT = '2c13b284b50a4a359c52a21d2cb18b3f';
-// Specify the correct user_id/app_id pairings
-// Since you're making inferences outside your app's scope
-const USER_ID = 'lfy7y3a2okah';       
-const APP_ID = 'face-detection-portif';
-// Change these to whatever model and image URL you want to use
-const MODEL_ID = 'face-detection';
-const MODEL_VERSION_ID = '6dc7e46bc9124c5c8824be4822abe105';    
-const IMAGE_URL = img;
+    setDetectando(true)
+    setRespApi(undefined) /* some com as caixas azuis da requisição anterior enquanto a requisição atual não termina */
+      
 
-///////////////////////////////////////////////////////////////////////////////////
-// YOU DO NOT NEED TO CHANGE ANYTHING BELOW THIS LINE TO RUN THIS EXAMPLE
-///////////////////////////////////////////////////////////////////////////////////
+    const PAT = '2c13b284b50a4a359c52a21d2cb18b3f';
+    const USER_ID = 'lfy7y3a2okah';       
+    const APP_ID = 'face-detection-portif';
+    const MODEL_ID = 'face-detection';
+    const MODEL_VERSION_ID = '6dc7e46bc9124c5c8824be4822abe105';    
+    const IMAGE_URL = img;
 
-const raw = JSON.stringify({
-    "user_app_id": {
-        "user_id": USER_ID,
-        "app_id": APP_ID
-    },
-    "inputs": [
-        {
-            "data": {
-                "image": {
-                    "url": IMAGE_URL
+    const raw = JSON.stringify({
+        "user_app_id": {
+            "user_id": USER_ID,
+            "app_id": APP_ID
+        },
+        "inputs": [
+            {
+                "data": {
+                    "image": {
+                        "url": IMAGE_URL
+                    }
                 }
             }
-        }
-    ]
-});
+        ]
+    });
 
-const requestOptions = {
-    method: 'POST',
-    headers: {
-        'Accept': 'application/json',
-        'Authorization': 'Key ' + PAT
-    },
-    body: raw
-};
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Authorization': 'Key ' + PAT
+        },
+        body: raw
+    };
 
-// NOTE: MODEL_VERSION_ID is optional, you can also call prediction with the MODEL_ID only
-// https://api.clarifai.com/v2/models/{YOUR_MODEL_ID}/outputs
-// this will default to the latest version_id
-
-fetch("https://api.clarifai.com/v2/models/" + MODEL_ID + "/versions/" + MODEL_VERSION_ID + "/outputs", requestOptions)
-    .then(response => response.json())
-    .then(result => setRespApi(result))
-    .catch(error => console.log('error', error));
+    fetch("https://api.clarifai.com/v2/models/" + MODEL_ID + "/versions/" + MODEL_VERSION_ID + "/outputs", requestOptions)
+        .then(response => response.json())
+        .then(result => {setRespApi(result); setDetectando(false)})
+        .catch(error => {setErro(true); setDetectando(false)});
   }
 
 
@@ -119,7 +108,7 @@ fetch("https://api.clarifai.com/v2/models/" + MODEL_ID + "/versions/" + MODEL_VE
         <Rank />
         <ImgContextProvider>
           <Input fnUrl={pegarUrl} fnReq={reqUrl} />
-          <ImagemRosto respApi={respApi} />
+          <ImagemRosto respApi={respApi} temErro={erro} detectando={detectando} />
         </ImgContextProvider>
       </div>
       <div className='bg-gradient-to-r from-purple-500 to-pink-500 absolute inset-0 -z-10'></div>
@@ -128,3 +117,10 @@ fetch("https://api.clarifai.com/v2/models/" + MODEL_ID + "/versions/" + MODEL_VE
 }
 
 export default App
+
+
+
+/*
+Dúvidas:
+No catch do fetch eu só peço pra ele setar o erro como true, mas ele está mudando automaticamente o meu state respApi também, pq isso acontece se eu não to mandando? Tipo, até tudo bem ele retornar mas pq tá mudando? Será que é pq essa API foi configurada de forma que o erro não deságua no catch mas sim em um retorno, ou seja, se retornou algo é pq a requisição em si funcionou, logo o catch não vai ser executado?
+*/
