@@ -1,9 +1,12 @@
 
+type Props = {
+    onChangeRoute: (param1: string) => void
+}
 
-function Navigation(){
+function Navigation({onChangeRoute}: Props){
     return(
         <div className="flex justify-end text-xl">
-            <div className=" underline hover:cursor-pointer p-4">Sign Out</div>
+            <div onClick={() => onChangeRoute("SignIn")} className=" underline hover:cursor-pointer p-4">Sign Out</div>
         </div>
     )
 }

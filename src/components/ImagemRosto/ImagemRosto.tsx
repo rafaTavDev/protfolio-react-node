@@ -48,7 +48,7 @@ function ImagemRosto({respApi, temErro, detectando}: Props){
                 respApi?.status.description === "Ok" ?
                 respApi.outputs[0].data.regions.map(item => <Box width={(item.region_info.bounding_box.right_col - item.region_info.bounding_box.left_col)*100 + "%"} height={(item.region_info.bounding_box.bottom_row - item.region_info.bounding_box.top_row)*100 + "%"} top={(item.region_info.bounding_box.top_row)*100 + "%"} left={(item.region_info.bounding_box.left_col)*100 + "%"}></Box>)
                 :
-                respApi && <div className="text-3xl font-bold drop-shadow-lg text-center">Tivemos um problema!<br/>Verifique sua internet e a URL digitada, por favor!</div>
+                respApi && <div className="text-3xl font-bold drop-shadow-lg text-center">Tivemos um problema!<br/>Verifique sua internet e a URL digitada, por favor!<br/>A detecção não funcionará caso a url da imagem não seja segura!</div>
             }
         </div>
     )
